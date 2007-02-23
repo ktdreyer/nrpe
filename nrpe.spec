@@ -1,7 +1,7 @@
 %define nsport 5666
 
 Name: nrpe
-Version: 2.5.2
+Version: 2.7
 Release: 3%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
@@ -105,6 +105,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Feb 23 2007 Mike McGrath <mmcgrath@redhat.com> 2.7-1
+- Upstream released new version
+
 * Sun Jul 23 2006 Mike McGrath <imlinux@gmail.com> 2.5.2-3
 - no longer owns libdir/nagios
 - buildrequires tcp_wrappers
