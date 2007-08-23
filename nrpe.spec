@@ -2,11 +2,11 @@
 
 Name: nrpe
 Version: 2.7
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
-License: GPL
+License: GPLv2
 URL: http://www.nagios.org
 Source: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
 Patch0: nrpe-initreload.patch
@@ -105,6 +105,10 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Wed Aug 22 2007 Mike McGrath <mmcgrath@redhat.com> 2.7-4
+- License Change
+- Rebuild for BuildID
+
 * Fri Feb 23 2007 Mike McGrath <mmcgrath@redhat.com> 2.7-1
 - Upstream released new version
 
