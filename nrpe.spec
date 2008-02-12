@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.7
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -105,6 +105,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Tue Feb 12 2008 Mike McGrath <mmcgrath@redhat.com> - 2.7-6
+- Rebuild for gcc43
+
 * Wed Dec 05 2007 Release Engineering <rel-eng at fedoraproject dot org> - 2.7-5
  - Rebuild for deps
 
