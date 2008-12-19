@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -18,6 +18,7 @@ Requires(pre): %{_sbindir}/useradd
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
+Provides: nagios-nrpe
 
 %description
 Nrpe is a system daemon that will execute various Nagios plugins
@@ -105,6 +106,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Dec 19 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-3
+- Added Provides: nagios-nrpe
+
 * Fri Dec 19 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-2
 - Upstreamreleased new version
 
