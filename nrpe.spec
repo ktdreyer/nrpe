@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -105,7 +105,7 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
-* Fri Dec 19 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-1
+* Fri Dec 19 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-2
 - Upstreamreleased new version
 
 * Tue Feb 12 2008 Mike McGrath <mmcgrath@redhat.com> - 2.7-6
