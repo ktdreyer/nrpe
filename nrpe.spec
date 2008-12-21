@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -103,9 +103,12 @@ fi
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
 %{_libdir}/nagios/*
-%doc Changelog LEGAL README
+%doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 
 %changelog
+* Sun Dec 21 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-4
+- Added some doc lines for ticket 477527
+
 * Fri Dec 19 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-3
 - Added Provides: nagios-nrpe
 
