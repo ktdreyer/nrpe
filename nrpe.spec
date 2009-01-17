@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -106,6 +106,9 @@ fi
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 
 %changelog
+* Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> - 2.12-5
+- rebuild with new openssl
+
 * Sun Dec 21 2008 Mike McGrath <mmcgrath@redhat.com> - 2.12-4
 - Added some doc lines for ticket 477527
 
