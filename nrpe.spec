@@ -2,14 +2,17 @@
 
 Name: nrpe
 Version: 2.12
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
 License: GPLv2
 URL: http://www.nagios.org
-Source: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
+Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
+Source1: nrpe.sysconfig
 Patch0: nrpe-initreload.patch
+Patch1:	nrpe-read-extra-conf.patch
+
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: openssl-devel tcp_wrappers
@@ -18,7 +21,7 @@ Requires(pre): %{_sbindir}/useradd
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
-Provides: nagios-nrpe
+Provides: nagios-nrpe = %{version}-%{release}
 
 %description
 Nrpe is a system daemon that will execute various Nagios plugins
@@ -33,7 +36,7 @@ This package provides the core agent.
 Group: Applications/System
 Summary: Provides nrpe plugin for Nagios
 Requires: nagios-plugins
-Provides: check_nrpe
+Provides: check_nrpe = %{version}-%{release}
 
 %description -n nagios-plugins-nrpe
 Nrpe is a system daemon that will execute various Nagios plugins
@@ -47,6 +50,7 @@ This package provides the nrpe plugin for Nagios-related applications.
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p0 -b .sysconfig
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" \
@@ -67,10 +71,11 @@ sed -i "s/# chkconfig: 2345/# chkconfig: - /" init-script
 
 %install
 rm -rf %{buildroot}
-install -D -m 0755 init-script %{buildroot}/%{_initrddir}/nrpe
-install -D -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/nrpe.cfg
-install -D -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
-install -D -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/check_nrpe
+install -D -p -m 0755 init-script %{buildroot}/%{_initrddir}/nrpe
+install -D -p -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/nrpe.cfg
+install -D -p -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
+install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/check_nrpe
+install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -98,7 +103,8 @@ fi
 %{_sbindir}/nrpe
 %dir %{_sysconfdir}/nagios
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
-%doc Changelog LEGAL README 
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%doc Changelog LEGAL README
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
@@ -106,6 +112,10 @@ fi
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 
 %changelog
+* Mon Feb  2 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-6
+- Fixed BZ# 449174
+- Clean up (in order to disable rpmlint warnings)
+
 * Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> - 2.12-5
 - rebuild with new openssl
 

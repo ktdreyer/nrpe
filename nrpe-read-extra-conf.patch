@@ -1,0 +1,23 @@
+--- init-script.in~	2009-01-30 18:34:49.509236950 +0300
++++ init-script.in	2009-01-30 18:37:09.797598582 +0300
+@@ -24,6 +24,11 @@
+ # Source networking configuration.
+ . /etc/sysconfig/network
+ 
++# Read configuration (environment etc.) for nrpe and plugins
++if [ -f /etc/sysconfig/nrpe ]; then
++    . /etc/sysconfig/nrpe
++fi
++
+ # Check that networking is up.
+ [ ${NETWORKING} = "no" ] && exit 0
+ 
+@@ -36,7 +41,7 @@
+   start)
+ 	# Start daemons.
+ 	echo -n "Starting nrpe: "
+-	daemon $NrpeBin -c $NrpeCfg -d
++	daemon $NrpeBin -c $NrpeCfg -d $NRPE_SSL_OPT
+ 	echo
+ 	touch $LockFile
+ 	;;
