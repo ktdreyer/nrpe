@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -104,14 +104,17 @@ fi
 %dir %{_sysconfdir}/nagios
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%doc Changelog LEGAL README
+%doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
 %{_libdir}/nagios/*
-%doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
+%doc Changelog LEGAL README
 
 %changelog
+* Sun Feb 21 2009 Mike McGrath <mmcgrath@redhat.com> - 2.12-7
+- Re-fix for 477527
+
 * Mon Feb  2 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-6
 - Fixed BZ# 449174
 - Clean up (in order to disable rpmlint warnings)
