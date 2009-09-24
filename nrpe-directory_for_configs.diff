@@ -1,0 +1,13 @@
+diff -up nrpe-2.12/sample-config/nrpe.cfg.in.orig nrpe-2.12/sample-config/nrpe.cfg.in
+--- nrpe-2.12/sample-config/nrpe.cfg.in.orig	2009-08-03 19:49:20.000000000 +0200
++++ nrpe-2.12/sample-config/nrpe.cfg.in	2009-08-03 19:50:43.000000000 +0200
+@@ -169,8 +169,7 @@ connection_timeout=300
+ # This directive allows you to include definitions from config files (with a
+ # .cfg extension) in one or more directories (with recursion).
+ 
+-#include_dir=<somedirectory>
+-#include_dir=<someotherdirectory>
++include_dir=/etc/nrpe.d/
+ 
+ 
+ 

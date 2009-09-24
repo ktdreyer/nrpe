@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -12,6 +12,7 @@ Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
 Source1: nrpe.sysconfig
 Patch0: nrpe-initreload.patch
 Patch1:	nrpe-read-extra-conf.patch
+Patch2: nrpe-directory_for_configs.diff
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -26,7 +27,7 @@ Provides: nagios-nrpe = %{version}-%{release}
 %description
 Nrpe is a system daemon that will execute various Nagios plugins
 locally on behalf of a remote (monitoring) host that uses the
-check_nrpe plugin.  Various plugins that can be executed by the 
+check_nrpe plugin.  Various plugins that can be executed by the
 daemon are available at:
 http://sourceforge.net/projects/nagiosplug
 
@@ -41,7 +42,7 @@ Provides: check_nrpe = %{version}-%{release}
 %description -n nagios-plugins-nrpe
 Nrpe is a system daemon that will execute various Nagios plugins
 locally on behalf of a remote (monitoring) host that uses the
-check_nrpe plugin.  Various plugins that can be executed by the 
+check_nrpe plugin.  Various plugins that can be executed by the
 daemon are available at:
 http://sourceforge.net/projects/nagiosplug
 
@@ -51,6 +52,7 @@ This package provides the nrpe plugin for Nagios-related applications.
 %setup -q
 %patch0 -p0
 %patch1 -p0 -b .sysconfig
+%patch2 -p1 -b .dir
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" \
@@ -76,6 +78,8 @@ install -D -p -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/
 install -D -p -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
 install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/check_nrpe
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
+install -d %{buildroot}%{_sysconfdir}/nrpe.d
+
 
 %clean
 rm -rf %{buildroot}
@@ -102,6 +106,7 @@ fi
 %{_initrddir}/nrpe
 %{_sbindir}/nrpe
 %dir %{_sysconfdir}/nagios
+%dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
@@ -112,6 +117,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Thu Sep 24 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-11
+- Fixed BZ# 515324
+
 * Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> - 2.12-10
 - rebuilt with new openssl
 
