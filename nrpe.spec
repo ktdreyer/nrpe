@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 11%{?dist}
+Release: 12%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -16,7 +16,13 @@ Patch2: nrpe-directory_for_configs.diff
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires: openssl-devel tcp_wrappers
+BuildRequires: openssl-devel
+
+%if 0%{?rhel}
+BuildRequires: tcp_wrappers
+%else
+BuildRequires: tcp_wrappers-devel
+%endif
 
 Requires(pre): %{_sbindir}/useradd
 Requires(preun): /sbin/service, /sbin/chkconfig
@@ -113,10 +119,14 @@ fi
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
-%{_libdir}/nagios/*
+%{_libdir}/nagios/plugins/check_nrpe
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Oct 26 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-12
+- Do not own %%{_libdir}/nagios/plugins ( bz# 528974 )
+- Fixed building against tcp_wrappers in Fedora ( bz# 528974 )
+
 * Thu Sep 24 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-11
 - Fixed BZ# 515324
 
