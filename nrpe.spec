@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 12%{?dist}
+Release: 13%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -10,15 +10,18 @@ License: GPLv2
 URL: http://www.nagios.org
 Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
 Source1: nrpe.sysconfig
-Patch0: nrpe-initreload.patch
-Patch1:	nrpe-read-extra-conf.patch
-Patch2: nrpe-directory_for_configs.diff
+Patch1: nrpe-0001-Add-reload-target-to-the-init-script.patch
+Patch2: nrpe-0002-Read-extra-configuration-from-etc-sysconfig-nrpe.patch
+Patch3: nrpe-0003-Include-etc-npre.d-config-directory.patch
+Patch4: nrpe-0004-Fix-initscript-return-codes.patch
+Patch5: nrpe-0005-Do-not-start-by-default.patch
+Patch6: nrpe-0006-Relocate-pid-file.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: openssl-devel
 
-%if 0%{?rhel}
+%if 0%{?el4}%{?el5}
 BuildRequires: tcp_wrappers
 %else
 BuildRequires: tcp_wrappers-devel
@@ -56,9 +59,12 @@ This package provides the nrpe plugin for Nagios-related applications.
 
 %prep
 %setup -q
-%patch0 -p0
-%patch1 -p0 -b .sysconfig
-%patch2 -p1 -b .dir
+%patch1 -p1 -b .reload
+%patch2 -p1 -b .extra_config
+%patch3 -p1 -b .include_etc_npre_d
+%patch4 -p1 -b .initscript_return_codes
+%patch5 -p1 -b .do_not_start_by_default
+%patch6 -p1 -b .relocate_pid
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" \
@@ -75,7 +81,6 @@ CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" \
 	--localstatedir=%{_localstatedir}/log/nagios \
 	--enable-command-args
 make %{?_smp_mflags} all
-sed -i "s/# chkconfig: 2345/# chkconfig: - /" init-script
 
 %install
 rm -rf %{buildroot}
@@ -85,6 +90,7 @@ install -D -p -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
 install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/check_nrpe
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
+install -d %{buildroot}%{_localstatedir}/run/nrpe
 
 
 %clean
@@ -116,6 +122,7 @@ fi
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
+%dir %attr(755, nrpe, nrpe) %{_localstatedir}/run/nrpe
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
@@ -123,6 +130,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Jun 18 2010 Peter Lemenkov <lemenkov@gmail.com> - 2.12-13
+- Init-script enhancements (see rhbz #247001, #567141 and #575544)
+
 * Mon Oct 26 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-12
 - Do not own %%{_libdir}/nagios/plugins ( bz# 528974 )
 - Fixed building against tcp_wrappers in Fedora ( bz# 528974 )
