@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 14%{?dist}
+Release: 15%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -130,6 +130,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Wed Sep 29 2010 jkeating - 2.12-15
+- Rebuilt for gcc bug 634757
+
 * Sat Sep 11 2010 Peter Lemenkov <lemenkov@gmail.com> - 2.12-14
 - Issue with SELinux was resolved (see rhbz #565220).
 
