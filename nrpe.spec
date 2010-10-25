@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 15%{?dist}
+Release: 16%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -122,7 +122,7 @@ fi
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
-%dir %attr(755, root, nrpe) %{_localstatedir}/run/nrpe
+%dir %attr(775, root, nrpe) %{_localstatedir}/run/nrpe
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
@@ -130,6 +130,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Oct 25 2010 Peter Lemenkov <lemenkov@gmail.com> - 2.12-16
+- Issue with SELinux was resolved (see rhbz #565220#c25). 2nd try.
+
 * Wed Sep 29 2010 jkeating - 2.12-15
 - Rebuilt for gcc bug 634757
 
