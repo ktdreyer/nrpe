@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 17%{?dist}
+Release: 18%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -10,6 +10,7 @@ License: GPLv2
 URL: http://www.nagios.org
 Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
 Source1: nrpe.sysconfig
+Source2: nrpe-tmpfiles.conf
 Patch1: nrpe-0001-Add-reload-target-to-the-init-script.patch
 Patch2: nrpe-0002-Read-extra-configuration-from-etc-sysconfig-nrpe.patch
 Patch3: nrpe-0003-Include-etc-npre.d-config-directory.patch
@@ -31,6 +32,7 @@ Requires(pre): %{_sbindir}/useradd
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
+Requires: initscripts
 Provides: nagios-nrpe = %{version}-%{release}
 
 %description
@@ -91,6 +93,7 @@ install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/chec
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
 install -d %{buildroot}%{_localstatedir}/run/nrpe
+install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf
 
 
 %clean
@@ -121,6 +124,7 @@ fi
 %dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 %dir %attr(775, root, nrpe) %{_localstatedir}/run/nrpe
 
@@ -130,6 +134,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Sat Sep 17 2011 Ruben Kerkhof <ruben@rubenkerkhof.com> 2.12-18
+- Let systemd create /var/run/nrpe. Fixes rhbz #656641
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-17
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
