@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 18%{?dist}
+Release: 19%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -93,7 +93,9 @@ install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/chec
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
 install -d %{buildroot}%{_localstatedir}/run/nrpe
+%if 0%{?fedora} > 14
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf
+%endif
 
 
 %clean
@@ -124,7 +126,9 @@ fi
 %dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%if 0%{?fedora} > 14
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
+%endif
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 %dir %attr(775, root, nrpe) %{_localstatedir}/run/nrpe
 
@@ -134,7 +138,10 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
-* Sat Sep 17 2011 Ruben Kerkhof <ruben@rubenkerkhof.com> 2.12-18
+* Thu Sep 22 2011 Peter Lemenkov <lemenkov@gmail.com> - 2.12-19
+- Disable systemd stuff in EPEL
+
+* Sat Sep 17 2011 Ruben Kerkhof <ruben@rubenkerkhof.com> - 2.12-18
 - Let systemd create /var/run/nrpe. Fixes rhbz #656641
 
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-17
