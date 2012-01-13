@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 19%{?dist}
+Release: 20%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -138,6 +138,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-20
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Thu Sep 22 2011 Peter Lemenkov <lemenkov@gmail.com> - 2.12-19
 - Disable systemd stuff in EPEL
 
