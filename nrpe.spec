@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.12
-Release: 20%{?dist}
+Release: 21%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -138,6 +138,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-21
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
+
 * Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-20
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
