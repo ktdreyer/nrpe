@@ -22,6 +22,8 @@ Patch6: nrpe-0006-Relocate-pid-file.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: openssl-devel
+# OpenSSL package was split into openssl and openssl-libs in F18+
+BuildRequires: openssl
 
 %if 0%{?el4}%{?el5}
 BuildRequires: tcp_wrappers
