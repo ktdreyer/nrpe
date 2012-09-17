@@ -1,8 +1,8 @@
 %define nsport 5666
 
 Name: nrpe
-Version: 2.12
-Release: 21%{?dist}
+Version: 2.13
+Release: 1%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -11,6 +11,7 @@ URL: http://www.nagios.org
 Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
 Source1: nrpe.sysconfig
 Source2: nrpe-tmpfiles.conf
+Source3: nrpe.service
 Patch1: nrpe-0001-Add-reload-target-to-the-init-script.patch
 Patch2: nrpe-0002-Read-extra-configuration-from-etc-sysconfig-nrpe.patch
 Patch3: nrpe-0003-Include-etc-npre.d-config-directory.patch
@@ -86,13 +87,17 @@ make %{?_smp_mflags} all
 
 %install
 rm -rf %{buildroot}
+%if 0%{?fedora} > 17
+install -D -m 0644 -p %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
+%else
 install -D -p -m 0755 init-script %{buildroot}/%{_initrddir}/nrpe
-install -D -p -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/nrpe.cfg
+%endif
+install -D -p -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/%{name}.cfg
 install -D -p -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
 install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/check_nrpe
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
-install -d %{buildroot}%{_localstatedir}/run/nrpe
+install -d %{buildroot}%{_localstatedir}/run/%{name}
 %if 0%{?fedora} > 14
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf
 %endif
@@ -102,25 +107,61 @@ install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.c
 rm -rf %{buildroot}
 
 %pre
-%{_sbindir}/useradd -c "NRPE user for the NRPE service" -d / -r -s /sbin/nologin nrpe 2> /dev/null || :
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+%{_sbindir}/useradd -c "NRPE user for the NRPE service" -d %{_localstatedir}/run/%{name} -r -g %{name} -s /sbin/nologin %{name} 2> /dev/null || :
 
 %preun
+%if 0%{?fedora} > 17
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable %{name}.service > /dev/null 2>&1 || :
+    /bin/systemctl stop %{name}.service > /dev/null 2>&1 || :
+fi
+%else
 if [ $1 = 0 ]; then
 	/sbin/service %{name} stop > /dev/null 2>&1 || :
 	/sbin/chkconfig --del %{name} || :
 fi
+%endif
 
 %post
+%if 0%{?fedora} > 17
+if [ $1 -eq 1 ] ; then
+    # Initial installation
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+fi
+%else
 /sbin/chkconfig --add %{name} || :
+%endif
 
 %postun
 if [ "$1" -ge "1" ]; then
 	/sbin/service %{name} condrestart > /dev/null 2>&1 || :
 fi
 
+
+%if 0%{?fedora} > 17
+%triggerun -- %{name} < 2.13
+# Save the current service runlevel info
+# User must manually run systemd-sysv-convert --apply opensips
+# to migrate them to systemd targets
+/usr/bin/systemd-sysv-convert --save %{name} >/dev/null 2>&1 ||:
+
+# Run these because the SysV package being removed won't do them
+/sbin/chkconfig --del %{name} >/dev/null 2>&1 || :
+/bin/systemctl try-restart %{name}.service >/dev/null 2>&1 || :
+
+chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
+%endif
+
+
 %files
-%defattr(-,root,root,-)
+%if 0%{?fedora} > 17
+%{_unitdir}/%{name}.service
+%else
 %{_initrddir}/nrpe
+%endif
 %{_sbindir}/nrpe
 %dir %{_sysconfdir}/nagios
 %dir %{_sysconfdir}/nrpe.d
@@ -130,7 +171,7 @@ fi
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
 %endif
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
-%dir %attr(775, root, nrpe) %{_localstatedir}/run/nrpe
+%dir %attr(775, %{name}, %{name}) %{_localstatedir}/run/%{name}
 
 %files -n nagios-plugins-nrpe
 %defattr(-,root,root,-)
@@ -138,6 +179,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Sep 17 2012 Peter Lemenkov <lemenkov@gmail.com> - 2.13-1
+- Ver. 2.13
+
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-21
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
