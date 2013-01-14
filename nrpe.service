@@ -8,7 +8,7 @@ Type=forking
 User=nrpe
 Group=nrpe
 EnvironmentFile=/etc/sysconfig/nrpe
-ExecStart=/usr/bin/nrpe -c /etc/nagios/nrpe.cfg -d $NRPE_SSL_OPT
+ExecStart=/usr/sbin/nrpe -c /etc/nagios/nrpe.cfg -d $NRPE_SSL_OPT
 
 [Install]
 WantedBy=multi-user.target

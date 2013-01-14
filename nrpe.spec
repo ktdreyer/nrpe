@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.13
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -36,6 +36,8 @@ Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
 Requires: initscripts
+# owns /etc/nagios
+Requires: nagios-common
 Provides: nagios-nrpe = %{version}-%{release}
 
 %description
@@ -165,7 +167,6 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %{_initrddir}/nrpe
 %endif
 %{_sbindir}/nrpe
-%dir %{_sysconfdir}/nagios
 %dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
@@ -181,6 +182,10 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Jan 14 2012 Mark Chappell <tremble@tremble.org.uk> - 2.13-2
+- #860982 Mistake in service file
+- #860985 nrpe shouldn't own /etc/nagios (from nagios-common)
+
 * Mon Sep 17 2012 Peter Lemenkov <lemenkov@gmail.com> - 2.13-1
 - Ver. 2.13
 
