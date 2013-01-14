@@ -1,8 +1,8 @@
 %define nsport 5666
 
 Name: nrpe
-Version: 2.13
-Release: 2%{?dist}
+Version: 2.14
+Release: 1%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -182,6 +182,9 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Jan 14 2013 Mark Chappell <tremble@tremble.org.uk> - 2.14
+- Version 2.14
+
 * Mon Jan 14 2013 Mark Chappell <tremble@tremble.org.uk> - 2.13-2
 - #860982 Mistake in service file
 - #860985 nrpe shouldn't own /etc/nagios (from nagios-common)
