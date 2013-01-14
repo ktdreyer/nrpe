@@ -182,7 +182,7 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %doc Changelog LEGAL README
 
 %changelog
-* Mon Jan 14 2012 Mark Chappell <tremble@tremble.org.uk> - 2.13-2
+* Mon Jan 14 2013 Mark Chappell <tremble@tremble.org.uk> - 2.13-2
 - #860982 Mistake in service file
 - #860985 nrpe shouldn't own /etc/nagios (from nagios-common)
 
