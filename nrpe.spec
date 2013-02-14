@@ -2,7 +2,7 @@
 
 Name: nrpe
 Version: 2.14
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -182,6 +182,9 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %doc Changelog LEGAL README
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.14-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Mon Jan 14 2013 Mark Chappell <tremble@tremble.org.uk> - 2.14
 - Version 2.14
 
