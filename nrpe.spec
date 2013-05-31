@@ -1,8 +1,11 @@
+%if 0%{?fedora} > 19
+%global _hardened_build 1
+%endif
 %define nsport 5666
 
 Name: nrpe
 Version: 2.14
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -18,12 +21,16 @@ Patch3: nrpe-0003-Include-etc-npre.d-config-directory.patch
 Patch4: nrpe-0004-Fix-initscript-return-codes.patch
 Patch5: nrpe-0005-Do-not-start-by-default.patch
 Patch6: nrpe-0006-Relocate-pid-file.patch
+Patch7: nrpe-0007-Add-condrestart-try-restart-target-to-initscript.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: openssl-devel
 # OpenSSL package was split into openssl and openssl-libs in F18+
 BuildRequires: openssl
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+BuildRequires:  systemd-units
+%endif
 
 %if 0%{?el4}%{?el5}
 BuildRequires: tcp_wrappers
@@ -32,10 +39,18 @@ BuildRequires: tcp_wrappers-devel
 %endif
 
 Requires(pre): %{_sbindir}/useradd
+
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
+%else
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
 Requires: initscripts
+%endif
+
 # owns /etc/nagios
 Requires: nagios-common
 Provides: nagios-nrpe = %{version}-%{release}
@@ -72,9 +87,10 @@ This package provides the nrpe plugin for Nagios-related applications.
 %patch4 -p1 -b .initscript_return_codes
 %patch5 -p1 -b .do_not_start_by_default
 %patch6 -p1 -b .relocate_pid
+%patch7 -p1 -b .condrestart
 
 %build
-CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" \
+CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="%{?__global_ldflags}" \
 ./configure \
 	--with-init-dir=%{_initrddir} \
 	--with-nrpe-port=%{nsport} \
@@ -91,7 +107,7 @@ make %{?_smp_mflags} all
 
 %install
 rm -rf %{buildroot}
-%if 0%{?fedora} > 17
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
 install -D -m 0644 -p %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 %else
 install -D -p -m 0755 init-script %{buildroot}/%{_initrddir}/nrpe
@@ -102,7 +118,7 @@ install -D -p -m 0755 src/check_nrpe %{buildroot}/%{_libdir}/nagios/plugins/chec
 install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
 install -d %{buildroot}%{_localstatedir}/run/%{name}
-%if 0%{?fedora} > 14
+%if 0%{?fedora} > 14 || 0%{?rhel} > 6
 install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf
 %endif
 
@@ -116,12 +132,8 @@ getent passwd %{name} >/dev/null || \
 %{_sbindir}/useradd -c "NRPE user for the NRPE service" -d %{_localstatedir}/run/%{name} -r -g %{name} -s /sbin/nologin %{name} 2> /dev/null || :
 
 %preun
-%if 0%{?fedora} > 17
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable %{name}.service > /dev/null 2>&1 || :
-    /bin/systemctl stop %{name}.service > /dev/null 2>&1 || :
-fi
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+%systemd_preun nrpe.service
 %else
 if [ $1 = 0 ]; then
 	/sbin/service %{name} stop > /dev/null 2>&1 || :
@@ -130,38 +142,23 @@ fi
 %endif
 
 %post
-%if 0%{?fedora} > 17
-if [ $1 -eq 1 ] ; then
-    # Initial installation
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-fi
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+%systemd_post nrpe.service
 %else
 /sbin/chkconfig --add %{name} || :
 %endif
 
 %postun
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+%systemd_postun_with_restart nrpe.service 
+%else
 if [ "$1" -ge "1" ]; then
 	/sbin/service %{name} condrestart > /dev/null 2>&1 || :
 fi
-
-
-%if 0%{?fedora} > 17
-%triggerun -- %{name} < 2.13
-# Save the current service runlevel info
-# User must manually run systemd-sysv-convert --apply opensips
-# to migrate them to systemd targets
-/usr/bin/systemd-sysv-convert --save %{name} >/dev/null 2>&1 ||:
-
-# Run these because the SysV package being removed won't do them
-/sbin/chkconfig --del %{name} >/dev/null 2>&1 || :
-/bin/systemctl try-restart %{name}.service >/dev/null 2>&1 || :
-
-chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %endif
 
-
 %files
-%if 0%{?fedora} > 17
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
 %{_unitdir}/%{name}.service
 %else
 %{_initrddir}/nrpe
@@ -170,7 +167,7 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
-%if 0%{?fedora} > 14
+%if 0%{?fedora} > 14 || 0%{?rhel} > 6
 %config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
 %endif
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
@@ -182,6 +179,12 @@ chown -R %{name}:%{name} %{_localstatedir}/cache/%{name}
 %doc Changelog LEGAL README
 
 %changelog
+* Wed May 22 2013 Kevin Fenzi <kevin@scrye.com> 2.14-3
+- Apply patch from bug 860988 to handle RHEL versions and systemd
+- Apply patch from bug 957567 to fix condrestart so nrpe restarts on upgrade. 
+- Rework systemd and service scriptlets and requires. 
+- Harden Fedora 19+ builds
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.14-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
