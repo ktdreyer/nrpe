@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.14
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -179,6 +179,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.14-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
+
 * Wed May 22 2013 Kevin Fenzi <kevin@scrye.com> 2.14-3
 - Apply patch from bug 860988 to handle RHEL versions and systemd
 - Apply patch from bug 957567 to fix condrestart so nrpe restarts on upgrade. 
