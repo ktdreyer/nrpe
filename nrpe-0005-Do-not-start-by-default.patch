@@ -1,11 +1,11 @@
-From cc3d3d04d9ae9ec4e8036784b60fc378908c57f7 Mon Sep 17 00:00:00 2001
+From 0c0bf12492b81b53bed71901e1d2a43d3cc4e7c0 Mon Sep 17 00:00:00 2001
 From: Peter Lemenkov <lemenkov@gmail.com>
 Date: Fri, 18 Jun 2010 14:11:33 +0400
-Subject: [PATCH 5/6] Do not start by default
+Subject: [PATCH 5/8] Do not start by default
 
 ---
- init-script.in |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ init-script.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/init-script.in b/init-script.in
 index 186c757..ed6c366 100644
@@ -21,5 +21,5 @@ index 186c757..ed6c366 100644
  #              running nagios plugins on this host.
  # processname: nrpe
 -- 
-1.6.6.1
+1.8.3.1
 

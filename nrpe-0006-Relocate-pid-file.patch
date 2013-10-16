@@ -1,16 +1,16 @@
-From c58026d6a575222dcfd40c49959ccfde6d2cb581 Mon Sep 17 00:00:00 2001
+From 080da5b0438bbdfac29ebb37919c870336bf759d Mon Sep 17 00:00:00 2001
 From: Peter Lemenkov <lemenkov@gmail.com>
 Date: Fri, 18 Jun 2010 14:14:13 +0400
-Subject: [PATCH 6/6] Relocate pid-file
+Subject: [PATCH 6/8] Relocate pid-file
 
 See this rhbz for the details:
 https://bugzilla.redhat.com/show_bug.cgi?id=575544
 ---
- sample-config/nrpe.cfg.in |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ sample-config/nrpe.cfg.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/sample-config/nrpe.cfg.in b/sample-config/nrpe.cfg.in
-index d72ab3b..a31df4b 100644
+index 1b72141..20eb927 100644
 --- a/sample-config/nrpe.cfg.in
 +++ b/sample-config/nrpe.cfg.in
 @@ -23,7 +23,7 @@ log_facility=@log_facility@
@@ -23,5 +23,5 @@ index d72ab3b..a31df4b 100644
  
  
 -- 
-1.6.6.1
+1.8.3.1
 

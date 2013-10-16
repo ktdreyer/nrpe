@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.14
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -22,9 +22,14 @@ Patch4: nrpe-0004-Fix-initscript-return-codes.patch
 Patch5: nrpe-0005-Do-not-start-by-default.patch
 Patch6: nrpe-0006-Relocate-pid-file.patch
 Patch7: nrpe-0007-Add-condrestart-try-restart-target-to-initscript.patch
+Patch8:	nrpe-0008-Allow-user-to-override-all-defaults-even-command-def.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+# For reconfiguration
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
 BuildRequires: openssl-devel
 # OpenSSL package was split into openssl and openssl-libs in F18+
 BuildRequires: openssl
@@ -40,15 +45,15 @@ BuildRequires: tcp_wrappers-devel
 
 Requires(pre): %{_sbindir}/useradd
 
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-Requires(post): systemd
-Requires(preun): systemd
-Requires(postun): systemd
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 Requires(preun): /sbin/service, /sbin/chkconfig
 Requires(post): /sbin/chkconfig, /sbin/service
 Requires(postun): /sbin/service
 Requires: initscripts
+%else
+Requires(post): systemd
+Requires(preun): systemd
+Requires(postun): systemd
 %endif
 
 # owns /etc/nagios
@@ -88,6 +93,15 @@ This package provides the nrpe plugin for Nagios-related applications.
 %patch5 -p1 -b .do_not_start_by_default
 %patch6 -p1 -b .relocate_pid
 %patch7 -p1 -b .condrestart
+%patch8 -p1 -b .allow_override
+# Allow building for aarch64
+# https://bugzilla.redhat.com/926244
+%if 0%{?fedora} > 17 || 0%{?rhel} > 6
+mv config.sub config.sub.old
+mv config.guess config.guess.old
+cp /usr/share/libtool/config/config.guess .
+cp /usr/share/libtool/config/config.sub .
+%endif
 
 %build
 CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="%{?__global_ldflags}" \
@@ -107,10 +121,10 @@ make %{?_smp_mflags} all
 
 %install
 rm -rf %{buildroot}
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-install -D -m 0644 -p %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 install -D -p -m 0755 init-script %{buildroot}/%{_initrddir}/nrpe
+%else
+install -D -m 0644 -p %{SOURCE3} %{buildroot}%{_unitdir}/%{name}.service
 %endif
 install -D -p -m 0644 sample-config/nrpe.cfg %{buildroot}/%{_sysconfdir}/nagios/%{name}.cfg
 install -D -p -m 0755 src/nrpe %{buildroot}/%{_sbindir}/nrpe
@@ -119,7 +133,7 @@ install -D -p -m 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/%{name}
 install -d %{buildroot}%{_sysconfdir}/nrpe.d
 install -d %{buildroot}%{_localstatedir}/run/%{name}
 %if 0%{?fedora} > 14 || 0%{?rhel} > 6
-install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/tmpfiles.d/%{name}.conf
+install -D -p -m 0644 %{SOURCE2} %{buildroot}%{_tmpfilesdir}/%{name}.conf
 %endif
 
 
@@ -132,53 +146,56 @@ getent passwd %{name} >/dev/null || \
 %{_sbindir}/useradd -c "NRPE user for the NRPE service" -d %{_localstatedir}/run/%{name} -r -g %{name} -s /sbin/nologin %{name} 2> /dev/null || :
 
 %preun
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-%systemd_preun nrpe.service
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 if [ $1 = 0 ]; then
 	/sbin/service %{name} stop > /dev/null 2>&1 || :
 	/sbin/chkconfig --del %{name} || :
 fi
+%else
+%systemd_preun nrpe.service
 %endif
 
 %post
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-%systemd_post nrpe.service
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 /sbin/chkconfig --add %{name} || :
+%else
+%systemd_post nrpe.service
 %endif
 
 %postun
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-%systemd_postun_with_restart nrpe.service 
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 if [ "$1" -ge "1" ]; then
 	/sbin/service %{name} condrestart > /dev/null 2>&1 || :
 fi
+%else
+%systemd_postun_with_restart nrpe.service
 %endif
 
 %files
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-%{_unitdir}/%{name}.service
-%else
+%if 0%{?el4}%{?el5}%{?el6}
 %{_initrddir}/nrpe
+%else
+%{_unitdir}/%{name}.service
 %endif
 %{_sbindir}/nrpe
 %dir %{_sysconfdir}/nrpe.d
 %config(noreplace) %{_sysconfdir}/nagios/nrpe.cfg
 %config(noreplace) %{_sysconfdir}/sysconfig/%{name}
 %if 0%{?fedora} > 14 || 0%{?rhel} > 6
-%config(noreplace) %{_sysconfdir}/tmpfiles.d/%{name}.conf
+%config(noreplace) %{_tmpfilesdir}/%{name}.conf
 %endif
 %doc Changelog LEGAL README README.SSL SECURITY docs/NRPE.pdf
 %dir %attr(775, %{name}, %{name}) %{_localstatedir}/run/%{name}
 
 %files -n nagios-plugins-nrpe
-%defattr(-,root,root,-)
 %{_libdir}/nagios/plugins/check_nrpe
 %doc Changelog LEGAL README
 
 %changelog
+* Wed Oct 16 2013 Peter Lemenkov <lemenkov@gmail.com> - 2.14-5
+- Allow building for aarch64 (rhbz #926244)
+- Allow user to redefine default commands (rhbz #963703)
+
 * Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.14-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
@@ -244,7 +261,7 @@ fi
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.12-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
-* Sun Feb 21 2009 Mike McGrath <mmcgrath@redhat.com> - 2.12-7
+* Sat Feb 21 2009 Mike McGrath <mmcgrath@redhat.com> - 2.12-7
 - Re-fix for 477527
 
 * Mon Feb  2 2009 Peter Lemenkov <lemenkov@gmail.com> - 2.12-6
@@ -286,7 +303,7 @@ fi
 * Mon Jul 03 2006 Mike McGrath <imlinux@gmail.com> 2.5.2-1
 - Upstream released new version
 
-* Mon Mar 12 2006 Mike McGrath <imlinux@gmail.com> 2.4-3
+* Sun Mar 12 2006 Mike McGrath <imlinux@gmail.com> 2.4-3
 - Added description to useradd statement
 
 * Sun Mar 05 2006 Mike McGrath <imlinux@gmail.com> 2.4-2

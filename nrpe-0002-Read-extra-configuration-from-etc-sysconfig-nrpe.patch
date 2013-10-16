@@ -1,13 +1,13 @@
-From 34c2f96a4e2582f13bc07d8d03a128a31e06813f Mon Sep 17 00:00:00 2001
+From bd0add531b840f6419794e4d628e816658272ef3 Mon Sep 17 00:00:00 2001
 From: Peter Lemenkov <lemenkov@gmail.com>
 Date: Fri, 18 Jun 2010 13:46:00 +0400
-Subject: [PATCH 2/6] Read extra configuration from /etc/sysconfig/nrpe
+Subject: [PATCH 2/8] Read extra configuration from /etc/sysconfig/nrpe
 
 See this rhbz for the details:
 https://bugzilla.redhat.com/show_bug.cgi?id=449174
 ---
- init-script.in |    7 ++++++-
- 1 files changed, 6 insertions(+), 1 deletions(-)
+ init-script.in | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/init-script.in b/init-script.in
 index 0bd7629..720a96d 100644
@@ -35,5 +35,5 @@ index 0bd7629..720a96d 100644
  	touch $LockFile
  	;;
 -- 
-1.6.6.1
+1.8.3.1
 

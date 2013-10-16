@@ -1,7 +1,7 @@
-From e3fd6c6b40fbd061490a9efbf9947f3c14bcc6ca Mon Sep 17 00:00:00 2001
+From 048153101214b5daa9f5b717f1b2bf9d3d1c93e6 Mon Sep 17 00:00:00 2001
 From: Todd Zullinger <tmz@pobox.com>
 Date: Sun, 28 Apr 2013 19:01:08 -0700
-Subject: [PATCH 7/7] Add condrestart/try-restart target to initscript
+Subject: [PATCH 7/8] Add condrestart/try-restart target to initscript
 
 The spec file calls this in %postun.  It simply fails but the error
 output is eaten by the redirection to /dev/null.
@@ -10,7 +10,7 @@ output is eaten by the redirection to /dev/null.
  1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/init-script.in b/init-script.in
-index ed6c366..96e17a7 100755
+index ed6c366..96e17a7 100644
 --- a/init-script.in
 +++ b/init-script.in
 @@ -66,12 +66,17 @@ case "$1" in
@@ -33,5 +33,5 @@ index ed6c366..96e17a7 100755
  esac
  
 -- 
-1.8.2.1
+1.8.3.1
 

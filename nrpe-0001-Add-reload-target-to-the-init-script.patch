@@ -1,11 +1,11 @@
-From 0a988e01a0b2e1859990a26198d6c8adee001cca Mon Sep 17 00:00:00 2001
+From a3528084ceb16047ccfec1b8a0a04dddec9535d3 Mon Sep 17 00:00:00 2001
 From: Peter Lemenkov <lemenkov@gmail.com>
 Date: Fri, 18 Jun 2010 13:45:05 +0400
-Subject: [PATCH 1/6] Add reload target to the init-script
+Subject: [PATCH 1/8] Add reload target to the init-script
 
 ---
- init-script.in |    7 ++++++-
- 1 files changed, 6 insertions(+), 1 deletions(-)
+ init-script.in | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/init-script.in b/init-script.in
 index 07b17c7..0bd7629 100644
@@ -30,5 +30,5 @@ index 07b17c7..0bd7629 100644
  esac
  
 -- 
-1.6.6.1
+1.8.3.1
 
