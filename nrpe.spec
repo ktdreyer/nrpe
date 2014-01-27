@@ -4,8 +4,8 @@
 %define nsport 5666
 
 Name: nrpe
-Version: 2.14
-Release: 5%{?dist}
+Version: 2.15
+Release: 1%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -192,6 +192,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Jan 27 2014 Sam Kottler <skottler@fedoraproject.org> - 2.15.1
+- Update to 2.15
+
 * Wed Oct 16 2013 Peter Lemenkov <lemenkov@gmail.com> - 2.14-5
 - Allow building for aarch64 (rhbz #926244)
 - Allow user to redefine default commands (rhbz #963703)
@@ -201,8 +204,8 @@ fi
 
 * Wed May 22 2013 Kevin Fenzi <kevin@scrye.com> 2.14-3
 - Apply patch from bug 860988 to handle RHEL versions and systemd
-- Apply patch from bug 957567 to fix condrestart so nrpe restarts on upgrade. 
-- Rework systemd and service scriptlets and requires. 
+- Apply patch from bug 957567 to fix condrestart so nrpe restarts on upgrade.
+- Rework systemd and service scriptlets and requires.
 - Harden Fedora 19+ builds
 
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.14-2
@@ -310,7 +313,7 @@ fi
 - Added proper SMP build flags
 - Added %{?dist} tag
 - Added reload to nrpe script
-- Updated to 2.4, changes include: 
+- Updated to 2.4, changes include:
 - Added option to allow week random seed (Gerhard Lausser)
 - Added optional command line prefix (Sean Finney)
 - Added ability to reload config file with SIGHUP
