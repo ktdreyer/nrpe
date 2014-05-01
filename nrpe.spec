@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.15
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -23,6 +23,11 @@ Patch5: nrpe-0005-Do-not-start-by-default.patch
 Patch6: nrpe-0006-Relocate-pid-file.patch
 Patch7: nrpe-0007-Add-condrestart-try-restart-target-to-initscript.patch
 Patch8:	nrpe-0008-Allow-user-to-override-all-defaults-even-command-def.patch
+# This should get removed whenever 2.16 is released, assuming it has the fix
+# included. http://seclists.org/oss-sec/2014/q2/129. There's not upstream
+# concensus that quoting arguments in a mode which is widely agreed upon to be
+# risky so track upstream discussions here, too.
+Patch9: nrpe-0009-CVE-2014-2913-nasty-metacharacters.patch
 
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -94,6 +99,8 @@ This package provides the nrpe plugin for Nagios-related applications.
 %patch6 -p1 -b .relocate_pid
 %patch7 -p1 -b .condrestart
 %patch8 -p1 -b .allow_override
+%patch9 -p1
+
 # Allow building for aarch64
 # https://bugzilla.redhat.com/926244
 %if 0%{?fedora} > 17 || 0%{?rhel} > 6
@@ -192,6 +199,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Thu May 1 2014 Sam Kottler <skottler@fedoraproject.org> - 2.15.2
+- Add patch to mitigate CVE-2014-2913
+
 * Mon Jan 27 2014 Sam Kottler <skottler@fedoraproject.org> - 2.15.1
 - Update to 2.15
 
