@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.15
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -199,6 +199,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Sat Jun 07 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.15-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
+
 * Thu May 1 2014 Sam Kottler <skottler@fedoraproject.org> - 2.15.2
 - Add patch to mitigate CVE-2014-2913
 
