@@ -5,13 +5,13 @@
 
 Name: nrpe
 Version: 2.15
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
 License: GPLv2
 URL: http://www.nagios.org
-Source0: http://dl.sourceforge.net/nagios/%{name}-%{version}.tar.gz
+Source0: http://sourceforge.net/projects/nagios/files/%{name}-2.x/%{name}-%{version}/%{name}-%{version}.tar.gz
 Source1: nrpe.sysconfig
 Source2: nrpe-tmpfiles.conf
 Source3: nrpe.service
@@ -22,7 +22,7 @@ Patch4: nrpe-0004-Fix-initscript-return-codes.patch
 Patch5: nrpe-0005-Do-not-start-by-default.patch
 Patch6: nrpe-0006-Relocate-pid-file.patch
 Patch7: nrpe-0007-Add-condrestart-try-restart-target-to-initscript.patch
-Patch8:	nrpe-0008-Allow-user-to-override-all-defaults-even-command-def.patch
+Patch8: nrpe-0008-Allow-user-to-override-all-defaults-even-command-def.patch
 # This should get removed whenever 2.16 is released, assuming it has the fix
 # included. http://seclists.org/oss-sec/2014/q2/129. There's not upstream
 # concensus that quoting arguments in a mode which is widely agreed upon to be
@@ -39,7 +39,7 @@ BuildRequires: openssl-devel
 # OpenSSL package was split into openssl and openssl-libs in F18+
 BuildRequires: openssl
 %if 0%{?fedora} > 17 || 0%{?rhel} > 6
-BuildRequires:  systemd-units
+BuildRequires: systemd-units
 %endif
 
 %if 0%{?el4}%{?el5}
@@ -104,10 +104,12 @@ This package provides the nrpe plugin for Nagios-related applications.
 # Allow building for aarch64
 # https://bugzilla.redhat.com/926244
 %if 0%{?fedora} > 17 || 0%{?rhel} > 6
-mv config.sub config.sub.old
-mv config.guess config.guess.old
-cp /usr/share/libtool/config/config.guess .
-cp /usr/share/libtool/config/config.sub .
+if [ -f /usr/share/libtool/config/config.guess ] && [ -f /usr/share/libtool/config/config.sub ];then
+    mv config.sub config.sub.old
+    mv config.guess config.guess.old
+    cp /usr/share/libtool/config/config.guess .
+    cp /usr/share/libtool/config/config.sub .
+fi
 %endif
 
 %build
@@ -199,6 +201,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Fri Sep 04 2015 Scott Wilkerson <swilkerson@fedoraproject.org> - 2.15-6
+- Fix spec file for missing /usr/share/libtool/config/config.guess
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.15-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
