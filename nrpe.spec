@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.15
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -101,20 +101,9 @@ This package provides the nrpe plugin for Nagios-related applications.
 %patch8 -p1 -b .allow_override
 %patch9 -p1
 
-# Allow building for aarch64
-# https://bugzilla.redhat.com/926244
-%if 0%{?fedora} > 17 || 0%{?rhel} > 6
-if [ -f /usr/share/libtool/config/config.guess ] && [ -f /usr/share/libtool/config/config.sub ];then
-    mv config.sub config.sub.old
-    mv config.guess config.guess.old
-    cp /usr/share/libtool/config/config.guess .
-    cp /usr/share/libtool/config/config.sub .
-fi
-%endif
-
 %build
 CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="%{?__global_ldflags}" \
-./configure \
+%configure \
 	--with-init-dir=%{_initrddir} \
 	--with-nrpe-port=%{nsport} \
 	--with-nrpe-user=nrpe \
@@ -126,6 +115,7 @@ CFLAGS="$RPM_OPT_FLAGS" CXXFLAGS="$RPM_OPT_FLAGS" LDFLAGS="%{?__global_ldflags}"
 	--sysconfdir=%{_sysconfdir}/nagios \
 	--localstatedir=%{_localstatedir}/log/nagios \
 	--enable-command-args
+
 make %{?_smp_mflags} all
 
 %install
@@ -201,6 +191,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Tue Sep  8 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2.15-7
+- Use %%configure macro as it deals with config.sub/guess and various flags properly
+
 * Fri Sep 04 2015 Scott Wilkerson <swilkerson@fedoraproject.org> - 2.15-6
 - Fix spec file for missing /usr/share/libtool/config/config.guess
 
