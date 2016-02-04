@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.15
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -191,6 +191,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.15-8
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
+
 * Tue Sep  8 2015 Peter Robinson <pbrobinson@fedoraproject.org> 2.15-7
 - Use %%configure macro as it deals with config.sub/guess and various flags properly
 
