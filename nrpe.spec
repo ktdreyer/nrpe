@@ -5,7 +5,7 @@
 
 Name: nrpe
 Version: 2.15
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: Host/service/network monitoring agent for Nagios
 
 Group: Applications/System
@@ -191,6 +191,9 @@ fi
 %doc Changelog LEGAL README
 
 %changelog
+* Mon Aug 01 2016 Ken Dreyer <kdreyer@redhat.com> - 2.15-9
+- Remove User/Group from nrpe.service file (rhbz#1318773)
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.15-8
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
